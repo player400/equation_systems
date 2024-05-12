@@ -1,0 +1,3 @@
+/home/player402/Dokumenty/notatki/mn/projekt1/mn/cmake-build-debug/CMakeFiles/mn.dir
+/home/player402/Dokumenty/notatki/mn/projekt1/mn/cmake-build-debug/CMakeFiles/edit_cache.dir
+/home/player402/Dokumenty/notatki/mn/projekt1/mn/cmake-build-debug/CMakeFiles/rebuild_cache.dir
