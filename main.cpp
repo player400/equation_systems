@@ -16,6 +16,7 @@ using namespace std;
 #define DESIRED_NORM 10e-9
 
 const int speedTestMatrixSizes [] = {200, 400, 600, 800, 1000, 1200, 1400, 1600, 1800, 2000};
+const int skipping [] = {1, 5, 10, 30, 100, 300};
 
 #include "gauss.h"
 #include "jacobi.h"
@@ -68,7 +69,7 @@ void directMethod(Matrix& A, Matrix& b)
     cout<<"LU solution residuum vector norm: "<<r.norm()<<endl<<endl;
 }
 
-void speedComparison()
+void speedComparison(int skip, string filename)
 {
     vector<int>timeGauss;
     vector<int>timeJacobi;
@@ -80,11 +81,11 @@ void speedComparison()
         Matrix A = generateAMatrix(N, 5+E, -1, -1);
         Matrix b = generateBMatrix(N, F);
         auto time = Time::now();
-        Matrix x = gauss(A, b, DESIRED_NORM, sols);
+        Matrix x = gauss(A, b, DESIRED_NORM, sols, skip);
         auto now = Time::now();
         timeGauss.push_back(chrono::duration_cast<chrono::microseconds>(now-time).count());
         time = Time::now();
-        x = jacobi(A, b, DESIRED_NORM, sols);
+        x = jacobi(A, b, DESIRED_NORM, sols, skip);
         now = Time::now();
         timeJacobi.push_back(chrono::duration_cast<chrono::microseconds>(now-time).count());
         time = Time::now();
@@ -92,7 +93,8 @@ void speedComparison()
         now = Time::now();
         timeLU.push_back(chrono::duration_cast<chrono::microseconds>(now-time).count());
     }
-    ofstream file("graph_data/speed_test.txt");
+    ofstream file("graph_data/"+filename);
+    cout<<endl<<"Skipping: "<<skip<<endl;
     cout<<"Matrix size, Time Gauss-Seidel, Time Jacobi, Time LU"<<endl;
     file<<"Matrix size, Time Gauss-Seidel, Time Jacobi, Time LU"<<endl;
     for(int i=0;i<timeLU.size();i++)
@@ -100,6 +102,14 @@ void speedComparison()
         cout<<speedTestMatrixSizes[i]<<", "<<timeGauss[i]<<", "<<timeJacobi[i]<<", "<<timeLU[i]<<endl;
         file<<speedTestMatrixSizes[i]<<", "<<timeGauss[i]<<", "<<timeJacobi[i]<<", "<<timeLU[i]<<endl;
     }
+}
+
+void speedTest()
+{
+    cout<<endl<<endl<<"===== SPEED TEST ====="<<endl;
+    speedComparison(30, "speed_test_skip_30.txt");
+    speedComparison(1, "speed_test_skip_1");
+
 }
 
 void secondSystem()
@@ -124,6 +134,6 @@ void firstSystem()
 int main() {
     firstSystem();
     secondSystem();
-    speedComparison();
+    speedTest();
     return 0;
 }

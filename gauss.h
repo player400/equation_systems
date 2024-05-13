@@ -7,15 +7,13 @@
 
 #endif //MN_GAUSS_H
 
-Matrix gauss(Matrix& A, Matrix& b, double desired_norm, vector<double>&solutions)
+Matrix gauss(Matrix& A, Matrix& b, double desired_norm, vector<double>&solutions, int skipAssesments = 1)
 {
+    bool doSkipping = skipAssesments < 2 ? false : true;
     Matrix x(b.getRows(), 1, 1.0);
-    Matrix d = A.diag();
-    Matrix l = A.lower();
-    Matrix u = A.upper();
-    Matrix dl = d+l;
-    Matrix element2 = dl.substituteForward(b);
-    double current_norm = x.norm();
+    Matrix r = A*x;
+    r = r - b;
+    double current_norm = r.norm();
     solutions.push_back(current_norm);
     while(current_norm>desired_norm)
     {
@@ -23,17 +21,27 @@ Matrix gauss(Matrix& A, Matrix& b, double desired_norm, vector<double>&solutions
         {
             break;
         }
-        Matrix ux = u*x;
-        Matrix element1 = dl.substituteForward(ux);
-        element1 = element1*(-1);
-        x = element1 + element2;
-        if(solutions.size()%1==0)
+        for(int i=0;i<x.getRows();i++)
         {
-            Matrix r= A*x;
+            double element = b.getElement(0, i);
+            for(int j=0;j<x.getRows();j++)
+            {
+                if(j==i)
+                {
+                    continue;
+                }
+                element -= A.getElement(j, i)*x.getElement(0, j);
+            }
+            element /= A.getElement(i, i);
+            x.setElement(element,0, i);
+        }
+
+        if(!doSkipping || solutions.size()%skipAssesments==0)
+        {
+            r = A*x;
             r = r - b;
             current_norm = r.norm();
         }
-
         solutions.push_back(current_norm);
     }
     return x;
