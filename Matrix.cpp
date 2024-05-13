@@ -10,6 +10,43 @@ void Matrix::setElement(double element, int col, int row)
     elements[row * cols + col] = element;
 }
 
+void Matrix::insertSubMatrix(Matrix& source, int colUpperLeftElement, int rowUpperLeftElement, int colLowerRightElement, int rowLowerRightElement, int col, int row, InsertMode mode,  double multipliedByScalar)
+{
+    for(int i=rowUpperLeftElement, currentRow = row;i<=rowLowerRightElement;i++, currentRow++)
+    {
+        for(int j = colUpperLeftElement, currentCol = col; j<=colLowerRightElement; j++, currentCol++)
+        {
+            double toInsert=source.getElement(j, i)*multipliedByScalar;
+            double element;
+            if(mode!=REPLACE)
+            {
+                element = getElement(currentCol, currentRow);
+                if(mode==ADD)
+                {
+                    element+=toInsert;
+                }
+                if(mode==SUBTRACT)
+                {
+                    element-=toInsert;
+                }
+                if(mode==MULTIPLY)
+                {
+                    element*=toInsert;
+                }
+                if(mode==DIVIDE)
+                {
+                    element/=toInsert;
+                }
+            }
+            else
+            {
+                element = toInsert;
+            }
+            setElement(element,currentCol, currentRow);
+        }
+    }
+}
+
 double Matrix::getElement(int col, int row) const
 {
     return elements[row * cols + col];
@@ -46,6 +83,14 @@ Matrix::Matrix(int rows, int cols, double elements []): Matrix(rows, cols)
     for(int i = 0;i < this->elements.size();i++)
     {
         this->elements[i] = elements[i];
+    }
+}
+
+
+Matrix::Matrix(int size, double elements):Matrix(size, size) {
+    for(int i=0 ;i<size;i++)
+    {
+        setElement(elements, i, i);
     }
 }
 
@@ -93,62 +138,31 @@ Matrix& Matrix::operator=(const Matrix& right)
 
 Matrix operator*(Matrix& left, Matrix& right)
 {
-
-
     int new_rows = left.getRows();
     int new_cols = right.getCols();
     int subvector_number = right.getRows();
-    double* first_step_vectors = (double*)malloc(sizeof(double) * (new_rows * subvector_number * new_cols));
     int offset = 0;
-
-    for (int i = 0; i < new_cols; i++)
-    {
-
-        for (int j = 0; j < subvector_number; j++)
-        {
-            double scalar = right.getElement(i, j);
-
-
-            for (int k = 0; k < new_rows; k++)
-            {
-                first_step_vectors[offset + k] = scalar * left.getElement(j, k);
-            }
-
-
-
-            offset += new_rows;
-        }
-    }
-
-
-
     Matrix result(new_rows, new_cols);
-
     for (int i = 0; i < new_cols; i++)
     {
-
-
-        for (int j = 0; j < new_rows; j++)
+        for (int k = 0; k < new_rows; k++)
         {
-            double sum = 0;
-            for (int k = 0; k < subvector_number; k++)
+            double sum =0.0;
+            for (int j = 0; j < subvector_number; j++)
             {
-                sum += first_step_vectors[i * subvector_number * new_rows + new_rows * k + j];
+                double scalar = right.getElement(i, j);
+                sum+=scalar * left.getElement(j, k);
+
             }
-            result.setElement(sum, i, j);
+            result.setElement(sum,i, k );
         }
-
-
     }
-
-
-    free(first_step_vectors);
     return result;
 }
 
 ostream& operator<<(ostream& os, Matrix& right)
 {
-    os<<"{";
+    os<<"[";
     for(int i = 0;i<right.rows;i++)
     {
         for(int j = 0;j<right.cols;j++)
@@ -164,7 +178,7 @@ ostream& operator<<(ostream& os, Matrix& right)
             os<<";"<<endl;
         }
     }
-    os<<"}";
+    os<<"]";
     return os;
 }
 
@@ -228,6 +242,25 @@ Matrix Matrix::substituteForward(Matrix vector) {
     for(int i=0; i<cols;i++)
     {
         for(int j=i+1; j<rows;j++)
+        {
+            double ratio = copy.getElement(i, j)/copy.getElement(i, i);
+            copy.setElement(copy.getElement(i, j)-copy.getElement(i, i)*ratio,i, j );
+            vector.setElement(vector.getElement(0, j)-vector.getElement(0, i)*ratio, 0, j);
+        }
+    }
+    for(int i=0; i<cols;i++)
+    {
+        vector.setElement(vector.getElement(0, i)/copy.getElement(i, i),0, i);
+    }
+    return vector;
+}
+
+Matrix Matrix::substituteBackwards(Matrix vector) {
+    Matrix copy(*this);
+
+    for(int i=cols-1; i>0;i--)
+    {
+        for(int j=i-1; j>=0;j--)
         {
             double ratio = copy.getElement(i, j)/copy.getElement(i, i);
             copy.setElement(copy.getElement(i, j)-copy.getElement(i, i)*ratio,i, j );

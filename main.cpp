@@ -1,5 +1,9 @@
 #include <iostream>
 #include <cmath>
+#include <chrono>
+#include "fstream"
+
+using Time = std::chrono::steady_clock;
 
 #include "Matrix.h"
 
@@ -11,28 +15,26 @@ using namespace std;
 #define D 3
 #define DESIRED_NORM 10e-9
 
+const int speedTestMatrixSizes [] = {200, 400, 600, 800, 1000, 1200, 1400, 1600, 1800, 2000};
+
 #include "gauss.h"
 #include "jacobi.h"
-#include "fstream"
+#include "lu.h"
 
 #include "matrix_generators.h"
 
-void iterativeMethods()
+void iterativeMethods(Matrix& A, Matrix& b, string folder_name)
 {
-    int N = 9*C*D;
-    Matrix A = generateAMatrix(N, 5+E, -1, -1);
-    Matrix b = generateBMatrix(N, F);
-
     vector<double> solutionsGauss;
     Matrix xGauss = gauss(A, b, DESIRED_NORM, solutionsGauss);
 
     vector<double> solutionsJacobi;
     Matrix xJacobi = jacobi(A, b, DESIRED_NORM, solutionsJacobi);
 
-    ofstream gaussStepsFile("graph_data/gauss_steps.txt");
+    ofstream gaussStepsFile("graph_data/"+folder_name+"/gauss_steps.txt");
     cout<<"Gauss-Seidel solution:"<<endl<<xGauss<<endl;
     cout<<"Number of steps: "<<solutionsGauss.size()<<endl;
-    cout<<"Norm during Gauss-Seidel iterative steps:"<<endl;
+    cout<<"Residuum vector norm during Gauss-Seidel iterative steps:"<<endl;
     for(int i=0;i<solutionsGauss.size();i++)
     {
         cout<<solutionsGauss[i]<<endl;
@@ -40,10 +42,10 @@ void iterativeMethods()
     }
     cout<<endl;
 
-    ofstream jacobiStepsFile("graph_data/jacobi_steps.txt");
+    ofstream jacobiStepsFile("graph_data/"+folder_name+"/jacobi_steps.txt");
     cout<<"Jacobi solution:"<<endl<<xGauss<<endl<<endl;
     cout<<"Number of steps: "<<solutionsJacobi.size()<<endl;
-    cout<<"Norm during Jacobi iterative steps:"<<endl;
+    cout<<"Residuum vector norm during Jacobi iterative steps:"<<endl;
     for(int i=0;i<solutionsJacobi.size();i++)
     {
         cout<<solutionsJacobi[i]<<endl;
@@ -55,7 +57,73 @@ void iterativeMethods()
     cout<<"Gauss-Seidel vs Jacobi difference:"<<endl<<dif<<endl<<"Norm: "<<dif.norm()<<endl<<endl;
 }
 
+
+
+void directMethod(Matrix& A, Matrix& b)
+{
+    Matrix x = lu(A, b);
+    cout<<"LU factorisation solution:"<<endl<<x<<endl<<endl;
+    Matrix r = A*x;
+    r = r - b;
+    cout<<"LU solution residuum vector norm: "<<r.norm()<<endl<<endl;
+}
+
+void speedComparison()
+{
+    vector<int>timeGauss;
+    vector<int>timeJacobi;
+    vector<int>timeLU;
+    vector<double>sols;
+    for(int i=0;i<10;i++)
+    {
+        int N = speedTestMatrixSizes[i];
+        Matrix A = generateAMatrix(N, 5+E, -1, -1);
+        Matrix b = generateBMatrix(N, F);
+        auto time = Time::now();
+        Matrix x = gauss(A, b, DESIRED_NORM, sols);
+        auto now = Time::now();
+        timeGauss.push_back(chrono::duration_cast<chrono::microseconds>(now-time).count());
+        time = Time::now();
+        x = jacobi(A, b, DESIRED_NORM, sols);
+        now = Time::now();
+        timeJacobi.push_back(chrono::duration_cast<chrono::microseconds>(now-time).count());
+        time = Time::now();
+        x = lu(A, b);
+        now = Time::now();
+        timeLU.push_back(chrono::duration_cast<chrono::microseconds>(now-time).count());
+    }
+    ofstream file("graph_data/speed_test.txt");
+    cout<<"Matrix size, Time Gauss-Seidel, Time Jacobi, Time LU"<<endl;
+    file<<"Matrix size, Time Gauss-Seidel, Time Jacobi, Time LU"<<endl;
+    for(int i=0;i<timeLU.size();i++)
+    {
+        cout<<speedTestMatrixSizes[i]<<", "<<timeGauss[i]<<", "<<timeJacobi[i]<<", "<<timeLU[i]<<endl;
+        file<<speedTestMatrixSizes[i]<<", "<<timeGauss[i]<<", "<<timeJacobi[i]<<", "<<timeLU[i]<<endl;
+    }
+}
+
+void secondSystem()
+{
+    cout<<endl<<endl<<"===== SECOND SYSTEM OF EQUATIONS ====="<<endl;
+    int N = 9*C*D;
+    Matrix A = generateAMatrix(N, 3, -1,-1);
+    Matrix b = generateBMatrix(N, F);
+    iterativeMethods(A, b, "system2");
+    directMethod(A, b);
+}
+
+void firstSystem()
+{
+    cout<<endl<<endl<<"===== FIRST SYSTEM OF EQUATIONS ====="<<endl;
+    int N = 9*C*D;
+    Matrix A = generateAMatrix(N, 5+E, -1, -1);
+    Matrix b = generateBMatrix(N, F);
+    iterativeMethods(A, b, "system1");
+}
+
 int main() {
-    iterativeMethods();
+    firstSystem();
+    secondSystem();
+    speedComparison();
     return 0;
 }

@@ -24,9 +24,20 @@ private:
 
 public:
 
+    enum InsertMode
+    {
+        ADD,
+        SUBTRACT,
+        MULTIPLY,
+        DIVIDE,
+        REPLACE,
+    };
+
     void setElement(double element, int col, int row);
 
     double getElement(int col, int row) const;
+
+    void insertSubMatrix(Matrix& source, int colUpperLeftElement, int rowUpperLeftElement, int colLowerRightElement, int rowLowerRightElement, int col, int row, InsertMode mode = InsertMode::REPLACE, double multipliedByScalar = 1.0);
 
     int getRows() const;
 
@@ -42,15 +53,17 @@ public:
 
     void elementWiseInverse();
 
-    void elementWiseMultiply(double x);
-
     Matrix substituteForward(Matrix vector);
+
+    Matrix substituteBackwards(Matrix vector);
 
     Matrix(int rows, int cols);
 
     Matrix(int rows, int cols, double elements []);
 
     Matrix(int rows, int cols, double elements);
+
+    Matrix(int size, double elements=1.0);
 
     Matrix(Matrix& old);
 

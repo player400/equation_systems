@@ -7,9 +7,9 @@
 
 #endif //MN_GAUSS_H
 
-Matrix jacobi(Matrix A, Matrix b, double desired_norm, vector<double>&solutions)
+Matrix jacobi(Matrix& A, Matrix& b, double desired_norm, vector<double>&solutions)
 {
-    Matrix r(b.getRows(), 1, 1.0);
+    Matrix x(b.getRows(), 1, 1.0);
     Matrix d = A.diag();
     Matrix l = A.lower();
     Matrix u = A.upper();
@@ -20,21 +20,24 @@ Matrix jacobi(Matrix A, Matrix b, double desired_norm, vector<double>&solutions)
     Matrix revinvd = invd*(-1);
     Matrix factor = revinvd*lu;
 
-    double current_norm = r.norm();
+    double current_norm = x.norm();
     solutions.push_back(current_norm);
     while(current_norm>desired_norm)
     {
+        if(solutions.size()>=1000)
+        {
+            break;
+        }
+        Matrix element1 = factor*x;
+        x = element1 + element2;
+        if(solutions.size()%1 == 0)
+        {
+            Matrix r = A*x;
+            r = r - b;
+            current_norm = r.norm();
+        }
 
-
-
-        Matrix element1 = factor*r;
-
-
-        r = element1 + element2;
-        Matrix resid = A*r;
-        resid = resid - b;
-        current_norm = resid.norm();
         solutions.push_back(current_norm);
     }
-    return r;
+    return x;
 }

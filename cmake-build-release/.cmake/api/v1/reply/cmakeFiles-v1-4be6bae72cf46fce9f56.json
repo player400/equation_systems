@@ -16,7 +16,7 @@
 		},
 		{
 			"isGenerated" : true,
-			"path" : "cmake-build-debug/CMakeFiles/3.27.8/CMakeSystem.cmake"
+			"path" : "cmake-build-release/CMakeFiles/3.27.8/CMakeSystem.cmake"
 		},
 		{
 			"isCMake" : true,
@@ -275,7 +275,7 @@
 		},
 		{
 			"isGenerated" : true,
-			"path" : "cmake-build-debug/CMakeFiles/3.27.8/CMakeCCompiler.cmake"
+			"path" : "cmake-build-release/CMakeFiles/3.27.8/CMakeCCompiler.cmake"
 		},
 		{
 			"isCMake" : true,
@@ -519,7 +519,7 @@
 		},
 		{
 			"isGenerated" : true,
-			"path" : "cmake-build-debug/CMakeFiles/3.27.8/CMakeCXXCompiler.cmake"
+			"path" : "cmake-build-release/CMakeFiles/3.27.8/CMakeCXXCompiler.cmake"
 		},
 		{
 			"isCMake" : true,
@@ -643,7 +643,7 @@
 		},
 		{
 			"isGenerated" : true,
-			"path" : "cmake-build-debug/CMakeFiles/3.27.8/CMakeCCompiler.cmake"
+			"path" : "cmake-build-release/CMakeFiles/3.27.8/CMakeCCompiler.cmake"
 		},
 		{
 			"isCMake" : true,
@@ -737,13 +737,13 @@
 		},
 		{
 			"isGenerated" : true,
-			"path" : "cmake-build-debug/CMakeFiles/3.27.8/CMakeCXXCompiler.cmake"
+			"path" : "cmake-build-release/CMakeFiles/3.27.8/CMakeCXXCompiler.cmake"
 		}
 	],
 	"kind" : "cmakeFiles",
 	"paths" : 
 	{
-		"build" : "/home/player402/Dokumenty/notatki/mn/projekt1/mn/cmake-build-debug",
+		"build" : "/home/player402/Dokumenty/notatki/mn/projekt1/mn/cmake-build-release",
 		"source" : "/home/player402/Dokumenty/notatki/mn/projekt1/mn"
 	},
 	"version" : 

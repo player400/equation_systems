@@ -6,7 +6,7 @@
 			[
 				{
 					"build" : ".",
-					"jsonFile" : "directory-.-Debug-f5ebdc15457944623624.json",
+					"jsonFile" : "directory-.-Release-f5ebdc15457944623624.json",
 					"minimumCMakeVersion" : 
 					{
 						"string" : "3.27"
@@ -19,7 +19,7 @@
 					]
 				}
 			],
-			"name" : "Debug",
+			"name" : "Release",
 			"projects" : 
 			[
 				{
@@ -39,7 +39,7 @@
 				{
 					"directoryIndex" : 0,
 					"id" : "mn::@6890427a1f51a3e7e1df",
-					"jsonFile" : "target-mn-Debug-20e68705faa41a329869.json",
+					"jsonFile" : "target-mn-Release-51f7b9a985f8ccc65bdb.json",
 					"name" : "mn",
 					"projectIndex" : 0
 				}
@@ -49,7 +49,7 @@
 	"kind" : "codemodel",
 	"paths" : 
 	{
-		"build" : "/home/player402/Dokumenty/notatki/mn/projekt1/mn/cmake-build-debug",
+		"build" : "/home/player402/Dokumenty/notatki/mn/projekt1/mn/cmake-build-release",
 		"source" : "/home/player402/Dokumenty/notatki/mn/projekt1/mn"
 	},
 	"version" : 

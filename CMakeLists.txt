@@ -8,4 +8,5 @@ add_executable(mn main.cpp
         Matrix.h
         gauss.h
         jacobi.h
-        matrix_generators.h)
+        matrix_generators.h
+        lu.h)
